@@ -4,21 +4,27 @@ from tkinter import ttk
 
 # Mock API functions
 def get_printers():
+    # Returns a list of available printers
     return ["Printer1", "Printer2", "Printer3"]
 
 def get_printer_status(printer_id):
+    # Returns the status of the specified printer
     return {"status": "online", "paper": "full", "ink": "75%"}
 
 def send_print_job(printer_id, document, options):
+    # Sends a print job to the specified printer and returns a job ID
     return {"job_id": 123, "status": "queued"}
 
 def cancel_print_job(printer_id, job_id):
+    # Cancels a specific print job and returns the cancellation status
     return {"status": "cancelled"}
 
 def get_print_queue(printer_id):
+    # Returns a list of print jobs currently in the queue for the specified printer
     return [{"job_id": 123, "document": "test.pdf", "status": "queued"}]
 
 def perform_maintenance(printer_id, task):
+    # Performs a maintenance task on the printer and returns the status
     return {"status": "success"}
 
 class PrinterControlApp:
@@ -34,6 +40,7 @@ class PrinterControlApp:
         self.update_print_queue()
 
     def create_styles(self):
+        # Define styles for different widgets
         style = ttk.Style()
         style.theme_use('default')
         
@@ -47,10 +54,11 @@ class PrinterControlApp:
         style.configure('TLabelframe.Label', background='#f0f0f0', font=('Arial', 12, 'bold'))
 
     def create_widgets(self):
+        # Main container for the GUI
         main_frame = ttk.Frame(self.root, padding="10")
         main_frame.grid(row=0, column=0, sticky="EW")
 
-        # Printer selection
+        # Printer selection section defines:
         printer_frame = ttk.Labelframe(main_frame, text="Printer Selection", padding="10")
         printer_frame.grid(row=0, column=0, sticky="EW")
         ttk.Label(printer_frame, text="Select Printer:").grid(row=0, column=0, padx=10, pady=10)
@@ -58,7 +66,7 @@ class PrinterControlApp:
         self.printer_menu.grid(row=0, column=1, padx=10, pady=10)
         self.selected_printer.trace("w", lambda *args: self.update_printer_status())
 
-        # Printer status
+        # Printer status section defines:
         status_frame = ttk.Labelframe(main_frame, text="Printer Status", padding="10")
         status_frame.grid(row=1, column=0, sticky="EW")
         self.status_label = ttk.Label(status_frame, text="Status: N/A")
@@ -68,7 +76,7 @@ class PrinterControlApp:
         self.ink_label = ttk.Label(status_frame, text="Ink: N/A")
         self.ink_label.grid(row=0, column=2, padx=10, pady=10)
 
-        # Print job options
+        # Print job options section defines:
         job_frame = ttk.Labelframe(main_frame, text="Print Job Options", padding="10")
         job_frame.grid(row=2, column=0, sticky="EW")
         ttk.Label(job_frame, text="Number of Copies:").grid(row=0, column=0, padx=10, pady=10)
@@ -80,9 +88,9 @@ class PrinterControlApp:
         ttk.Label(job_frame, text="Print Quality:").grid(row=2, column=0, padx=10, pady=10)
         self.quality_options = ttk.Combobox(job_frame, values=["High", "Medium", "Low"])
         self.quality_options.grid(row=2, column=1, padx=10, pady=10)
-        self.quality_options.current(1)  # Set default to Medium
+        self.quality_options.current(1)  # By Default set to Medium quality
 
-        # Print and Cancel buttons
+        # Print button and Cancel button
         button_frame = ttk.Frame(job_frame)
         button_frame.grid(row=3, column=0, columnspan=2, padx=10, pady=10)
         self.print_button = ttk.Button(button_frame, text="Send Print Job", command=self.send_print_job)
@@ -90,7 +98,7 @@ class PrinterControlApp:
         self.cancel_button = ttk.Button(button_frame, text="Cancel Print Job", command=self.cancel_print_job)
         self.cancel_button.pack(side="left", padx=5)
 
-        # Print queue
+        # Print queue section here:
         queue_frame = ttk.Labelframe(main_frame, text="Print Queue", padding="10")
         queue_frame.grid(row=3, column=0, sticky="EW")
         self.queue_listbox = tk.Listbox(queue_frame, height=5)
@@ -98,7 +106,7 @@ class PrinterControlApp:
         self.refresh_button = ttk.Button(queue_frame, text="Refresh Queue", command=self.update_print_queue)
         self.refresh_button.grid(row=1, column=0, padx=10, pady=10)
 
-        # Maintenance tasks
+        # Maintenance tasks section as: 
         maintenance_frame = ttk.Labelframe(main_frame, text="Maintenance Tasks", padding="10")
         maintenance_frame.grid(row=4, column=0, sticky="EW")
         self.clean_heads_button = ttk.Button(maintenance_frame, text="Clean Heads", command=lambda: self.perform_maintenance("clean_heads"))
@@ -106,11 +114,12 @@ class PrinterControlApp:
         self.align_printer_button = ttk.Button(maintenance_frame, text="Align Printer", command=lambda: self.perform_maintenance("align_printer"))
         self.align_printer_button.grid(row=0, column=1, padx=10, pady=10)
 
-        # Progress bar
+        # Progress bar defined:
         self.progress = ttk.Progressbar(main_frame, orient="horizontal", length=200, mode="determinate")
         self.progress.grid(row=5, column=0, padx=10, pady=10)
 
     def update_printer_status(self):
+        # Updated the printer status based on the selected printer
         status = get_printer_status(self.selected_printer.get())
         status_text = f"Status: {status['status']}"
         if status['status'] == "online":
@@ -122,6 +131,7 @@ class PrinterControlApp:
         self.update_print_queue()
 
     def send_print_job(self):
+        # Send a print job with the specified options mentioned:
         options = {
             "copies": self.copies_spinbox.get(),
             "page_range": self.page_range_entry.get(),
@@ -130,29 +140,26 @@ class PrinterControlApp:
         document = filedialog.askopenfilename()
         if document:
             result = send_print_job(self.selected_printer.get(), document, options)
-            messagebox.showinfo("Print Job", f"Print job {result['job_id']} queued")
+            messagebox.showinfo("Print Job", f"Print job {result['job_id']} is now in the queue.")
             self.update_print_queue()
 
     def cancel_print_job(self):
+        # Cancel the selected print job from the queue as followes:
         selected_job = self.queue_listbox.get(tk.ACTIVE)
         if selected_job:
             job_id = int(selected_job.split()[0])
             result = cancel_print_job(self.selected_printer.get(), job_id)
-            messagebox.showinfo("Cancel Job", f"Print job {job_id} {result['status']}")
+            messagebox.showinfo("Cancel Job", f"Print job {job_id} has been {result['status']}.")
             self.update_print_queue()
 
     def update_print_queue(self):
+        # Update the print queue list here:
         self.queue_listbox.delete(0, tk.END)
         queue = get_print_queue(self.selected_printer.get())
         for job in queue:
             self.queue_listbox.insert(tk.END, f"{job['job_id']} - {job['document']} - {job['status']}")
 
     def perform_maintenance(self, task):
+        # Perform maintenance task on the selected printer as defined:
         result = perform_maintenance(self.selected_printer.get(), task)
-        messagebox.showinfo("Maintenance", f"Maintenance {task} {result['status']}")
-        self.update_printer_status()
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = PrinterControlApp(root)
-    root.mainloop()
+        messagebox.show
